@@ -14,7 +14,7 @@ void Game::start(void)
     return;
  
   //Init the static data members
-  mMainWindow.create(sf::VideoMode(640,640,32),"Messy");
+  mMainWindow.create(sf::VideoMode(920,680,32),"Messy");
   mGameState = Game::SPLASH;
   
   //Start the loop

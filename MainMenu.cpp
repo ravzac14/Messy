@@ -31,7 +31,7 @@ MainMenu::MenuResult MainMenu::show(sf::RenderWindow& window)
  
   //load menu imag from file
   sf::Image image;
-  if (!image.loadFromFile("assets/splash640x640.png")) { return EXIT; } // Problem loading image
+  if (!image.loadFromFile("assets/680x680-mainmenu-null.png")) { return EXIT; } // Problem loading image
   
   sf::Texture texture;
   sf::Rect<int> empty;
