@@ -8,7 +8,7 @@
 class MainMenu
 {
   public: 
-    enum MenuResult {NOTHING,EXIT,PLAY};
+    enum MenuResult {NOTHING,EXIT,HIGHSCORE,PLAY};
 
     struct MenuItem {
       public:
@@ -21,7 +21,12 @@ class MainMenu
   private:
     MenuResult getMenuResponse(sf::RenderWindow& window);
     MenuResult handleClick(int x, int y);
+    MenuResult handlekey(sf::Keyboard::Key code, sf::RenderWindow& window);
+    MenuResult handleHover(int x, int y, sf::RenderWindow& window);
     std::list<MenuItem> mMenuItems;
+    void updateImage(const std::string& s, sf::RenderWindow& window);
+    std::string currentImage;
+    sf::Rect<int>* currentRect;
 };
 
 #endif

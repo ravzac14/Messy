@@ -9,7 +9,7 @@
 void SplashScreen::show(sf::RenderWindow& window)
 {
   sf::Image image;
-  if (!image.loadFromFile("assets/680x680-title.png")) { return; } //Problem loading the image
+  if (!image.loadFromFile("assets/920x680-title.png")) { return; } //Problem loading the image
   
   sf::Texture texture;
   sf::Rect<int> area; //Empty means the whole image

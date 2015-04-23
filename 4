@@ -62,6 +62,7 @@ void MainMenu::updateImage(const std::string& newImage, sf::RenderWindow& window
   texture.loadFromImage(image, empty);
   sf::Sprite sprite(texture);
   
+  std::cout << " Updating image " << newImage << std::endl;
   currentImage = newImage;
   window.draw(sprite);
   window.display();
@@ -78,6 +79,7 @@ MainMenu::MenuResult MainMenu::handleHover(int x, int y, sf::RenderWindow& windo
     {
       currentRect = &(*itr).mRect;
       wasContained = true;
+      std::cout << " Current rect changed, current image before: " << currentImage << std::endl;
       
       switch ((*itr).mAction) {
         case EXIT: {
@@ -97,8 +99,10 @@ MainMenu::MenuResult MainMenu::handleHover(int x, int y, sf::RenderWindow& windo
   } 
   if (!wasContained)
     currentRect = nullptr;
-    //TODO figure out how to get back to un highlighted: updateImage(MENU_BASE, window);
+    updateImage(MENU_NULL, window);
   
+  std::cout << "Current image After: " << currentImage << std::endl;
+
   return NOTHING; //This doesnt have to do anything, just update the image  
 }
 
@@ -111,26 +115,6 @@ MainMenu::MenuResult MainMenu::handleClick(int x, int y)
     sf::Rect<int> menuItemRect = (*itr).mRect;
     if (menuItemRect.contains(x,y))
       return (*itr).mAction;
-  }
-  return NOTHING;
-}
-
-MainMenu::MenuResult MainMenu::handleKey(sf::Keyboard::Key code, sf::RenderWindow& window)
-{
-  switch (code) {
-    case sf::Keyboard::Enter: {
-      
-    } break;
-    case sf::Keyboard::Escape: {
-      //TODO:return CONFIRM_EXIT
-    } break;
-    case sf::Keyboard::Up: {
-      //TODO:decrement where in the menuItems list currentRect is, updateImage
-    } break;
-    case sf::Keyboard::Down: {
-      //TODO:increment where in the menuItems list currentRect is, updateImage
-
-    } break;
   }
   return NOTHING;
 }
@@ -155,10 +139,10 @@ MainMenu::MenuResult MainMenu::getMenuResponse(sf::RenderWindow& window)
     {
       if (menuEvent.type == sf::Event::MouseButtonPressed)
         return handleClick(menuEvent.mouseButton.x, menuEvent.mouseButton.y);
-      if (menuEvent.type == sf::Event::KeyPressed)
-        return handleKey(menuEvent.Keyboard::Key.code, window);
       if (menuEvent.type == sf::Event::Closed)
         return EXIT;
+      //if (menuEvent.type == sf::Event::MouseMoved)
+      //  break;
     }
   }
 }

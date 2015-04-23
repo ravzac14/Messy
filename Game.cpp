@@ -72,6 +72,9 @@ void Game::showMenu()
     case MainMenu::EXIT: {
       mGameState = Game::EXITING;
     } break;
+    //case MainMenu::HIGHSCORE: {
+    //  mGameState = Game::HIGHSCORING;
+    //} break;
     case MainMenu::PLAY: {
       mGameState = Game::PLAYING;
     } break;
