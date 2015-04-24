@@ -21,11 +21,10 @@ class MainMenu
   private:
     MenuResult getMenuResponse(sf::RenderWindow& window);
     MenuResult handleClick(int x, int y);
-    MenuResult handlekey(sf::Keyboard::Key code, sf::RenderWindow& window);
+    MenuResult handleKey(sf::Keyboard::Key code, sf::RenderWindow& window);
     MenuResult handleHover(int x, int y, sf::RenderWindow& window);
     std::list<MenuItem> mMenuItems;
-    void updateImage(const std::string& s, sf::RenderWindow& window);
-    std::string currentImage;
+    void updateImage(sf::RenderWindow& window);
     sf::Rect<int>* currentRect;
 };
 
