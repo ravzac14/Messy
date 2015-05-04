@@ -13,10 +13,19 @@ void Game::start(void)
   if (mGameState != Game::UNINIT)
     return;
  
-  //Init the static data members
-  mMainWindow.create(sf::VideoMode(920,680,32),"Messy");
+  mMainWindow.create(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT,32),"Messy");
+
   mGameState = Game::SPLASH;
-  
+
+  //Load first level
+
+  //Load the actor
+  Maid* actor = new Maid();
+  actor->setPosition(WINDOW_WIDTH-320,20); //TODO: Here would be different for each level, so this init may move
+  mGameObjectManager.add("Maid", actor);
+
+  mGameClock.restart();
+
   //Start the loop
   while (!isExiting())
   {
@@ -24,6 +33,19 @@ void Game::start(void)
   }
   mMainWindow.close();
 }//Game::Start
+
+//This is just for general playing key input (not sprite manipulation)
+void Game::handleKey()
+{ 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+      showMenu();
+    } 
+} //handleKey
+
+sf::RenderWindow& Game::getWindow ()
+{
+  return mMainWindow;
+}
 
 bool Game::isExiting()
 {
@@ -36,26 +58,40 @@ bool Game::isExiting()
 void Game::gameLoop()
 {
   sf::Event currentEvent;
-  while (mMainWindow.pollEvent(currentEvent))
-  {
-    //Pivot off of the current game state
-    switch (mGameState) {
-      case Game::SPLASH: {
-        showSplash();
-      } break;
-      case Game::MENU: {
-        showMenu();
-      } break;
-      case Game::PLAYING: {
-        mMainWindow.clear(sf::Color(65,170,190));
-        mMainWindow.display();
-
+  
+  //Pivot off of the current game state
+  switch (mGameState) {
+    case Game::SPLASH: {
+      showSplash();
+    } break;
+    case Game::MENU: {
+      showMenu();
+    } break;
+    case Game::PLAYING: {  
+      mMainWindow.clear(sf::Color(65,170,190));
+      mGameObjectManager.drawAll(mMainWindow);
+      mMainWindow.display();
+      
+      while (mMainWindow.pollEvent(currentEvent))
+      {
         if (currentEvent.type == sf::Event::Closed) 
           mGameState = Game::EXITING;
-      } break;
-    }
-  }
-}
+      }
+      Game::handleKey();
+//TODO: Movement is broked
+
+//TODO:mElapsed gets thrown to screen
+
+//TODO: Pull out event handling in MainMenu
+
+      if ((mGameClock.getElapsedTime().asSeconds() - mLastUpdate) >= .03){
+        mGameObjectManager.updateAll();
+        mLastUpdate = mGameClock.getElapsedTime().asSeconds();
+      } 
+    } break;
+
+  }//switch
+}//gameLoop
 
 void Game::showSplash()
 {
@@ -82,5 +118,9 @@ void Game::showMenu()
 }
 
 //Make sure all the static memebers are init
+float Game::mLastUpdate = 0;
+float Game::mElapsedTime;
+sf::Clock Game::mGameClock;
+GameObjectManager Game::mGameObjectManager;
 Game::GameState Game::mGameState = UNINIT;
 sf::RenderWindow Game::mMainWindow;

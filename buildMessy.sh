@@ -2,4 +2,4 @@
 
 #Just builds Messy so i don't have to write it every time
 
-g++ -std=c++11 Messy.cpp Game.cpp MainMenu.cpp SplashScreen.cpp stdafx.cpp -o Messy -lsfml-graphics -lsfml-window -lsfml-system
+g++ -std=c++11 Messy.cpp Game.cpp VisibleGameObject.cpp GameObjectManager.cpp Maid.cpp MainMenu.cpp SplashScreen.cpp stdafx.cpp -o Messy -lsfml-graphics -lsfml-window -lsfml-system
