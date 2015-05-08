@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "Maid.h"
+#include "Game.h"
 
 Maid::Maid () : mVelocity {10.0f}
 { 
@@ -16,9 +17,9 @@ Maid::~Maid ()
 void Maid::handleKey()
 {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) { // --Up
-    if (getFace() == Maid::UP)
+    if (getFace() == Maid::UP) {
       move(0,-mVelocity);
-    else 
+     } else 
       setFace(Maid::UP);
   } 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) { // -- Down
@@ -71,12 +72,15 @@ void Maid::move (float xOffset, float yOffset)
     mFoot = L;
   std::string newImage = getAnimation();
   load(newImage);
-  
-  if (((getPosition().x + xOffset + SPRITE_WIDTH) <= WINDOW_WIDTH) &&
-       ((getPosition().x + xOffset) >= 0) &&
-       ((getPosition().y + yOffset + SPRITE_HEIGHT) <= WINDOW_HEIGHT) && 
-       ((getPosition().y + yOffset) >= 0)) 
+ 
+  if (isLegalMove(getPosition().x + xOffset, getPosition().y + yOffset)) 
     getSprite().move(xOffset,yOffset);
+}
+
+bool Maid::isLegalMove(float newX, float newY)
+{
+  return (Game::isInWindowBounds(newX,newY,WIDTH,HEIGHT));
+      //TODO: && getLevelManager().isInLevelBounds(newX,newY,WIDTH,HEIGHT)
 }
 
 std::string Maid::getAnimation ()

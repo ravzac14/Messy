@@ -30,6 +30,8 @@ void SplashScreen::show(sf::RenderWindow& window)
       {
         return;
       }
-    }
+    } 
   }
 }
+
+

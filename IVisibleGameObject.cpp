@@ -2,15 +2,15 @@
  */
 
 #include "stdafx.h"
-#include "VisibleGameObject.h"
+#include "IVisibleGameObject.h"
 
-VisibleGameObject::VisibleGameObject () : mIsLoaded {false}
+IVisibleGameObject::IVisibleGameObject () : mIsLoaded {false}
 { }
 
-VisibleGameObject::~VisibleGameObject ()
+IVisibleGameObject::~IVisibleGameObject ()
 { }
 
-void VisibleGameObject::load (std::string filename)
+void IVisibleGameObject::load (std::string filename)
 {
   if (mIsInitialized) {
     if (mImage.loadFromFile(filename) == false) {
@@ -28,54 +28,54 @@ void VisibleGameObject::load (std::string filename)
   }
 }
 
-void VisibleGameObject::update ()
+void IVisibleGameObject::update ()
 { }
 
-sf::Vector2f VisibleGameObject::getPosition () const
+sf::Vector2f IVisibleGameObject::getPosition () const
 {
   if (mIsLoaded)
     return mSprite.getPosition();
   return sf::Vector2f();
 }
 
-bool VisibleGameObject::isLoaded() const
+bool IVisibleGameObject::isLoaded() const
 {
   return mIsLoaded;
 }
 
-bool VisibleGameObject::isInitialized() const
+bool IVisibleGameObject::isInitialized() const
 {
   return mIsInitialized;
 }
 
-void VisibleGameObject::setInitialized(bool b)
+void IVisibleGameObject::setInitialized(bool b)
 {
   mIsInitialized = b;
 }
 
-sf::Sprite VisibleGameObject::getSprite ()
+sf::Sprite& IVisibleGameObject::getSprite ()
 {
   return mSprite;
 }
 
-void VisibleGameObject::initializeActor()
+void IVisibleGameObject::initializeActor()
 { };
 
-void VisibleGameObject::draw (sf::RenderWindow& window)
+void IVisibleGameObject::draw (sf::RenderWindow& window)
 {
   if (mIsLoaded) {
     window.draw(mSprite);
   } 
 } 
 
-void VisibleGameObject::setPosition (float x, float y)
+void IVisibleGameObject::setPosition (float x, float y)
 {
   if (mIsLoaded) {
     mSprite.setPosition(x,y);
   }
 }
 
-void VisibleGameObject::move (float xOffset, float yOffset)
+void IVisibleGameObject::move (float xOffset, float yOffset)
 {
   if (mIsLoaded) { //TODO: Stipulations for walls and stuff would go here
     mSprite.move(xOffset,yOffset);

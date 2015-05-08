@@ -1,7 +1,7 @@
 #ifndef GAME_OBJECT_MANAGER_H
 #define GAME_OBJECT_MANAGER_H
 
-#include "VisibleGameObject.h"
+#include "IVisibleGameObject.h"
 
 class GameObjectManager
 {
@@ -9,20 +9,20 @@ class GameObjectManager
     GameObjectManager();
     ~GameObjectManager();
 
-    void add(std::string name, VisibleGameObject* gameObject);
+    void add(std::string name, IVisibleGameObject* gameObject);
     void remove(std::string name);
     int getObjectCount() const;
-    VisibleGameObject* get(std::string name) const;
+    IVisibleGameObject* get(std::string name) const;
 
     void drawAll(sf::RenderWindow& window);
     void updateAll ();
 
   private:
-    std::map<std::string, VisibleGameObject*> mGameObjects;
+    std::map<std::string, IVisibleGameObject*> mGameObjects;
 
     struct GameObjectDeallocator
     {
-      void operator() (const std::pair<std::string, VisibleGameObject*>& p) const
+      void operator() (const std::pair<std::string, IVisibleGameObject*>& p) const
       {
         delete p.second;
       }

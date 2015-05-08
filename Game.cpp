@@ -6,6 +6,10 @@
 #include "Game.h"
 #include "SplashScreen.h"
 #include "MainMenu.h"
+#include "PauseMenu.h"
+
+#define SPRITE_DELAY .10  //This is sprite input delay, to simulate older fps
+                          // .10 = 10 FPS, 0.033 = 30 FPS, .066 = 60 FPS, etc
 
 void Game::start(void)
 {
@@ -34,17 +38,31 @@ void Game::start(void)
   mMainWindow.close();
 }//Game::Start
 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//       Game handle key
 //This is just for general playing key input (not sprite manipulation)
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 void Game::handleKey()
 { 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-      showMenu();
-    } 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) 
+      mGameState = Game::PAUSED;
 } //handleKey
 
 sf::RenderWindow& Game::getWindow ()
 {
   return mMainWindow;
+}
+
+bool Game::isInWindowBounds(float left, float top, float sWidth, float sHeight)
+{
+  float right = left + sWidth;
+  float bottom = top + sHeight;
+
+  return ((left >= 0) && 
+          (right <= WINDOW_WIDTH) &&
+          (top >= 0) &&
+          (bottom <= WINDOW_HEIGHT));
 }
 
 bool Game::isExiting()
@@ -55,6 +73,10 @@ bool Game::isExiting()
     return false;
 }
 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//       GAME LOOP
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 void Game::gameLoop()
 {
   sf::Event currentEvent;
@@ -62,13 +84,20 @@ void Game::gameLoop()
   //Pivot off of the current game state
   switch (mGameState) {
     case Game::SPLASH: {
+      mMainWindow.setMouseCursorVisible(false);
       showSplash();
     } break;
     case Game::MENU: {
+      mMainWindow.setMouseCursorVisible(true);
       showMenu();
+    } break;
+    case Game::PAUSED: {
+      mMainWindow.setMouseCursorVisible(false);
+      showPauseMenu();
     } break;
     case Game::PLAYING: {  
       mMainWindow.clear(sf::Color(65,170,190));
+      mMainWindow.setMouseCursorVisible(false);
       mGameObjectManager.drawAll(mMainWindow);
       mMainWindow.display();
       
@@ -78,13 +107,12 @@ void Game::gameLoop()
           mGameState = Game::EXITING;
       }
       Game::handleKey();
-//TODO: Movement is broked
 
 //TODO:mElapsed gets thrown to screen
 
 //TODO: Pull out event handling in MainMenu
 
-      if ((mGameClock.getElapsedTime().asSeconds() - mLastUpdate) >= .03){
+      if ((mGameClock.getElapsedTime().asSeconds() - mLastUpdate) >= SPRITE_DELAY){
         mGameObjectManager.updateAll();
         mLastUpdate = mGameClock.getElapsedTime().asSeconds();
       } 
@@ -92,6 +120,28 @@ void Game::gameLoop()
 
   }//switch
 }//gameLoop
+
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//       The showXX () methods
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+void Game::showPauseMenu()
+{
+  mLastUpdate = mGameClock.getElapsedTime().asSeconds();
+  PauseMenu pauseMenu;
+  while ((mGameClock.getElapsedTime().asSeconds() - mLastUpdate) <= 0.25f) { } //TODO: Add a proper delay method later
+  PauseMenu::MenuResult result = pauseMenu.show(mMainWindow);
+  switch (result) {
+    case PauseMenu::EXIT: {
+      mGameState = Game::MENU;
+    } break;
+    case PauseMenu::PLAY: {
+      mGameState = Game::PLAYING;
+    } break; 
+  }//switch
+  while ((mGameClock.getElapsedTime().asSeconds() - mLastUpdate) <= 0.25f) { } //TODO: Add a proper delay method later
+}
 
 void Game::showSplash()
 {
@@ -108,7 +158,7 @@ void Game::showMenu()
     case MainMenu::EXIT: {
       mGameState = Game::EXITING;
     } break;
-    //case MainMenu::HIGHSCORE: {
+    //TODO: case MainMenu::HIGHSCORE: {
     //  mGameState = Game::HIGHSCORING;
     //} break;
     case MainMenu::PLAY: {

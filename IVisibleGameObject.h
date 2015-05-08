@@ -1,11 +1,11 @@
-#ifndef VISIBLE_GAME_OBJECT_H
-#define VISIBLE_GAME_OBJECT_H
+#ifndef I_VISIBLE_GAME_OBJECT_H
+#define I_VISIBLE_GAME_OBJECT_H
 
-class VisibleGameObject
+class IVisibleGameObject
 {
   public:
-    VisibleGameObject();
-    virtual ~VisibleGameObject();
+    IVisibleGameObject();
+    virtual ~IVisibleGameObject();
 
     virtual void load(std::string filename);
     virtual void draw(sf::RenderWindow& window);
@@ -22,7 +22,7 @@ class VisibleGameObject
   protected:
     bool mIsLoaded;
     bool mIsInitialized;
-    sf::Sprite getSprite();
+    sf::Sprite& getSprite();
 
   private:
     sf::Sprite mSprite;

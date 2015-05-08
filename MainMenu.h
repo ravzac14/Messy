@@ -24,7 +24,8 @@ class MainMenu
   public: 
     enum MenuResult {NOTHING,EXIT,HIGHSCORE,PLAY};
 
-    class MenuItem {
+    class MenuItem
+    {
       public:
         sf::Rect<int> mRect;
         MenuResult mAction;

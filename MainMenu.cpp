@@ -37,12 +37,6 @@ MainMenu::MenuResult MainMenu::show(sf::RenderWindow& window)
 
   static MainMenu::MenuItem playButton {sf::Rect<int> {BUTTON_LEFT_EDGE,PLAY_TOP,BUTTON_WIDTH,BUTTON_HEIGHT}, PLAY};
   static MainMenu::MenuItem hsButton {sf::Rect<int> {BUTTON_LEFT_EDGE,HS_TOP,BUTTON_WIDTH,BUTTON_HEIGHT}, HIGHSCORE};
-  //hsButton.mRect.left = BUTTON_LEFT_EDGE;
-  //hsButton.mRect.top = HS_TOP;
-  //hsButton.mRect.width = BUTTON_WIDTH;
-  //hsButton.mRect.height = BUTTON_HEIGHT;
-  //hsButton.mAction = HIGHSCORE; //TODO this is nothing for now, eventually it should be HIGHSCORE
-
   static MainMenu::MenuItem exitButton {sf::Rect<int> {BUTTON_LEFT_EDGE,EXIT_TOP,BUTTON_WIDTH,BUTTON_HEIGHT}, EXIT};
 
   mMenuItems.push_back(playButton);
@@ -205,6 +199,7 @@ MainMenu::MenuResult MainMenu::getMenuResponse(sf::RenderWindow& window)
       handleHover(menuEvent.mouseMove.x, menuEvent.mouseMove.y, window);
     }
 
+    //TODO: Take out this event polling stuff
     //Handle events
     while (window.pollEvent(menuEvent))
     {

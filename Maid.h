@@ -1,12 +1,12 @@
 #ifndef MAID_H
 #define MAID_H
 
-#include "VisibleGameObject.h"
+#include "IVisibleGameObject.h"
 
 const int WINDOW_HEIGHT = 680;
 const int WINDOW_WIDTH = 920;
 
-class Maid : public VisibleGameObject
+class Maid : public IVisibleGameObject
 {
   public:
     enum ActorFace {UP,DOWN,LEFT,RIGHT};
@@ -17,6 +17,7 @@ class Maid : public VisibleGameObject
    
     ActorFace getFace ();
     void setFace(ActorFace f);
+    bool isLegalMove(float newX, float newY);
     void move(float xOffset,float yOffset);
     void update();
     void initializeActor();
@@ -33,8 +34,8 @@ class Maid : public VisibleGameObject
     const std::string RIGHT_L = "assets/100x100-elephant_maid-R-U.png";
     const std::string RIGHT_R = "assets/100x100-elephant_maid-R-D.png";
     const float MAX_VELOCITY = 10.0;
-    const int SPRITE_WIDTH = 100;
-    const int SPRITE_HEIGHT = 100;
+    const float WIDTH = 100.0f;
+    const float HEIGHT = 100.0f;
 
   private:
     ActorFace mFace;
