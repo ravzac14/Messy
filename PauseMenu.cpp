@@ -6,14 +6,14 @@
 PauseMenu::MenuResult PauseMenu::show (sf::RenderWindow& window)
 {
   sf::Image image;
-  if (!image.loadFromFile("assets/360x265-ingame-menu-pause.png")) return NOTHING;
+  if (!image.loadFromFile(PM_BASE)) return NOTHING; //TODO throw some exceptions
 
   sf::Texture texture;
   sf::Rect<int> area;
   texture.loadFromImage(image, area);
   sf::Sprite sprite(texture);
   
-  sprite.setPosition(200.0f,200.0f);
+  sprite.setPosition(PM_LEFT,PM_TOP);
   window.draw(sprite);
   window.display();
 
@@ -40,14 +40,14 @@ PauseMenu::MenuResult PauseMenu::getMenuResponse(sf::RenderWindow& window)
   
   while (true) {
     while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed)
-        return EXIT;
       if (event.type == sf::Event::KeyPressed) {
         PauseMenu::MenuResult result = handleKey(event.key.code);
         if (result == NOTHING)
           break; 
         return result;
       }
+      if (event.type == sf::Event::Closed)
+        return HARD_EXIT;
     }
   }
 

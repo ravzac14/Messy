@@ -12,6 +12,7 @@ class Game
     static void start();
     static sf::RenderWindow& getWindow();
     static bool isInWindowBounds(float newX, float newY, float spriteWidth, float spriteHeight);
+    static void delayBy (float duration);
 
     const static int WINDOW_HEIGHT = 680;
     const static int WINDOW_WIDTH = 920;

@@ -54,6 +54,10 @@ sf::RenderWindow& Game::getWindow ()
   return mMainWindow;
 }
 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//      Helper functions  
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 bool Game::isInWindowBounds(float left, float top, float sWidth, float sHeight)
 {
   float right = left + sWidth;
@@ -63,6 +67,13 @@ bool Game::isInWindowBounds(float left, float top, float sWidth, float sHeight)
           (right <= WINDOW_WIDTH) &&
           (top >= 0) &&
           (bottom <= WINDOW_HEIGHT));
+}
+
+void Game::delayBy(float duration)
+{
+  float currentTime = mGameClock.getElapsedTime().asSeconds();
+  while ((mGameClock.getElapsedTime().asSeconds() - currentTime) <= duration) 
+  { } //Do nothing but wait 
 }
 
 bool Game::isExiting()
@@ -128,9 +139,8 @@ void Game::gameLoop()
 
 void Game::showPauseMenu()
 {
-  mLastUpdate = mGameClock.getElapsedTime().asSeconds();
+  Game::delayBy(0.20f); //Was being weird about handling keys to quick
   PauseMenu pauseMenu;
-  while ((mGameClock.getElapsedTime().asSeconds() - mLastUpdate) <= 0.25f) { } //TODO: Add a proper delay method later
   PauseMenu::MenuResult result = pauseMenu.show(mMainWindow);
   switch (result) {
     case PauseMenu::EXIT: {
@@ -139,8 +149,11 @@ void Game::showPauseMenu()
     case PauseMenu::PLAY: {
       mGameState = Game::PLAYING;
     } break; 
+    case PauseMenu::HARD_EXIT: {
+      mGameState = Game::EXITING;
+    } break;
   }//switch
-  while ((mGameClock.getElapsedTime().asSeconds() - mLastUpdate) <= 0.25f) { } //TODO: Add a proper delay method later
+  Game::delayBy(0.20f); //Same ^
 }
 
 void Game::showSplash()

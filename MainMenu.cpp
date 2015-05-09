@@ -5,39 +5,15 @@
  */
 
 #include "MainMenu.h"
-
-MainMenu::MenuItem::MenuItem (sf::Rect<int>& r, MainMenu::MenuResult a) : mRect {r}, mAction {a} 
-{ }
-
-MainMenu::MenuItem::MenuItem (sf::Rect<int>&& r, MainMenu::MenuResult a) : mRect {std::move(r)}, mAction {a} 
-{ }
-
-bool MainMenu::MenuItem::operator== (const MainMenu::MenuItem& rhs) 
-{
-  return (this->mAction == rhs.mAction);
-}
-
-MainMenu::MenuItem& MainMenu::MenuItem::operator= (const MainMenu::MenuItem& rhs) 
-{
-  MenuItem copy = rhs;
-  std::swap(*this,copy);
-  return *this;
-}
-
-MainMenu::MenuItem& MainMenu::MenuItem::operator= (MainMenu::MenuItem& rhs) 
-{
-  std::swap(mAction,rhs.mAction);
-  std::swap(mRect,rhs.mRect);
-  return *this;
-}
+#include "RectangularMenuItem.h"
 
 MainMenu::MenuResult MainMenu::show(sf::RenderWindow& window)
 {
   currentButton = nullptr;
 
-  static MainMenu::MenuItem playButton {sf::Rect<int> {BUTTON_LEFT_EDGE,PLAY_TOP,BUTTON_WIDTH,BUTTON_HEIGHT}, PLAY};
-  static MainMenu::MenuItem hsButton {sf::Rect<int> {BUTTON_LEFT_EDGE,HS_TOP,BUTTON_WIDTH,BUTTON_HEIGHT}, HIGHSCORE};
-  static MainMenu::MenuItem exitButton {sf::Rect<int> {BUTTON_LEFT_EDGE,EXIT_TOP,BUTTON_WIDTH,BUTTON_HEIGHT}, EXIT};
+  static RectangularMenuItem<MainMenu::MenuResult> playButton {sf::Rect<int> {MM_BUTTON_LEFT,MM_PLAY_BUTTON_TOP,MM_BUTTON_WIDTH,MM_BUTTON_HEIGHT}, PLAY};
+  static RectangularMenuItem<MainMenu::MenuResult> hsButton {sf::Rect<int> {MM_BUTTON_LEFT,MM_HS_BUTTON_TOP,MM_BUTTON_WIDTH,MM_BUTTON_HEIGHT}, HIGHSCORE};
+  static RectangularMenuItem<MainMenu::MenuResult> exitButton {sf::Rect<int> {MM_BUTTON_LEFT,MM_EXIT_BUTTON_TOP,MM_BUTTON_WIDTH,MM_BUTTON_HEIGHT}, EXIT};
 
   mMenuItems.push_back(playButton);
   mMenuItems.push_back(hsButton);
@@ -57,18 +33,18 @@ void MainMenu::updateImage(sf::RenderWindow& window)
   {
     switch (currentButton->mAction) {
       case EXIT: {
-        newImage = &MENU_EXIT;
+        newImage = &MM_EXIT;
       } break;
       case PLAY: {
-        newImage = &MENU_PLAY;
+        newImage = &MM_PLAY;
       } break;
       case HIGHSCORE: {
-        newImage = &MENU_HS;
+        newImage = &MM_HS;
       } break;
     } 
   }
   else {  
-    newImage = &MENU_BASE;
+    newImage = &MM_BASE;
   }
  
   sf::Image image; 
@@ -86,20 +62,20 @@ void MainMenu::updateImage(sf::RenderWindow& window)
 
 void MainMenu::handleHover(int x, int y, sf::RenderWindow& window)
 {
-  std::list<MainMenu::MenuItem>::iterator itr;
+  std::list<RectangularMenuItem<MainMenu::MenuResult>>::iterator itr;
   
-  if (!MOUSE_CONTAINED) {
+  if (!MM_MOUSE_CONTAINED) {
     for (itr = mMenuItems.begin(); itr != mMenuItems.end(); itr++)
     {
       sf::Rect<int> menuItemRect = (*itr).mRect;
       if (menuItemRect.contains(x,y)) {
         currentButton = &(*itr);
-        MOUSE_CONTAINED = true;
+        MM_MOUSE_CONTAINED = true;
       }
     } 
   } else {
     currentButton = nullptr;
-    MOUSE_CONTAINED = false;
+    MM_MOUSE_CONTAINED = false;
   } 
   
   updateImage(window); 
@@ -108,7 +84,7 @@ void MainMenu::handleHover(int x, int y, sf::RenderWindow& window)
 MainMenu::MenuResult MainMenu::handleClick(int x, int y)
 {
 
-  std::list<MainMenu::MenuItem>::iterator itr;
+  std::list<RectangularMenuItem<MainMenu::MenuResult>>::iterator itr;
 
   for (itr = mMenuItems.begin(); itr != mMenuItems.end(); itr++)
   {
@@ -121,7 +97,7 @@ MainMenu::MenuResult MainMenu::handleClick(int x, int y)
 
 MainMenu::MenuResult MainMenu::handleKey(sf::Keyboard::Key code, sf::RenderWindow& window)
 {
-    std::list<MainMenu::MenuItem>::iterator itr;
+    std::list<RectangularMenuItem<MainMenu::MenuResult>>::iterator itr;
 
     switch (code) {
     case sf::Keyboard::Return: {  //KEY - ENTER
@@ -193,13 +169,12 @@ MainMenu::MenuResult MainMenu::getMenuResponse(sf::RenderWindow& window)
       if (!currentButton->mRect.contains(sf::Mouse::getPosition(window)))
         handleHover(menuEvent.mouseMove.x, menuEvent.mouseMove.y, window);
     } 
-    else if (  (sf::Mouse::getPosition(window).x < MIN_MOUSE_X_REACT)
-            && (sf::Mouse::getPosition(window).y > MAX_MOUSE_Y_REACT))
+    else if (  (sf::Mouse::getPosition(window).x < MM_MIN_MOUSE_X_REACT)
+            && (sf::Mouse::getPosition(window).y > MM_MAX_MOUSE_Y_REACT))
     {
       handleHover(menuEvent.mouseMove.x, menuEvent.mouseMove.y, window);
     }
 
-    //TODO: Take out this event polling stuff
     //Handle events
     while (window.pollEvent(menuEvent))
     {
