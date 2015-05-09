@@ -67,7 +67,7 @@ void MainMenu::handleHover(int x, int y, sf::RenderWindow& window)
   if (!MM_MOUSE_CONTAINED) {
     for (itr = mMenuItems.begin(); itr != mMenuItems.end(); itr++)
     {
-      sf::Rect<int> menuItemRect = (*itr).mRect;
+      sf::Rect<int> menuItemRect = itr->mRect;
       if (menuItemRect.contains(x,y)) {
         currentButton = &(*itr);
         MM_MOUSE_CONTAINED = true;
@@ -101,9 +101,8 @@ MainMenu::MenuResult MainMenu::handleKey(sf::Keyboard::Key code, sf::RenderWindo
 
     switch (code) {
     case sf::Keyboard::Return: {  //KEY - ENTER
-      if (!currentButton) {                      
+      if (!currentButton)   
         currentButton = &(*mMenuItems.begin());   
-      }
       else 
         return currentButton->mAction;    
     } break;
@@ -111,9 +110,8 @@ MainMenu::MenuResult MainMenu::handleKey(sf::Keyboard::Key code, sf::RenderWindo
       //TODO:return CONFIRM_EXIT
     } break;
     case sf::Keyboard::Up: {  //KEY - UP
-      if (!currentButton) {                     
-        currentButton = &(*mMenuItems.begin());   
-      }
+      if (!currentButton)                      
+        currentButton = &(*(--mMenuItems.end()));   
       else {
         switch (currentButton->mAction) {
           case PLAY: {
@@ -131,9 +129,8 @@ MainMenu::MenuResult MainMenu::handleKey(sf::Keyboard::Key code, sf::RenderWindo
       }
     } break;
     case sf::Keyboard::Down: {  //KEY - DOWN
-      if (!currentButton)  {                  
-        currentButton = &(*(--mMenuItems.end()));  
-      }
+      if (!currentButton) 
+        currentButton = &(*(mMenuItems.begin()));  
       else {
         switch (currentButton->mAction) {
           case PLAY: {

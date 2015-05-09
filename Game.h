@@ -24,13 +24,15 @@ class Game
     static void showPauseMenu();
     static void showSplash();
     static void showMenu();
+    static void showConfirmExitMenu();
 
     //static void handleKey(sf::Keyboard::Key code);
     static void handleKey();
 
-    enum GameState {UNINIT, SPLASH, MENU, LOADING, PAUSED, PLAYING, EXITING};
+    enum GameState {UNINIT, SPLASH, MENU, LOADING, PAUSED, PLAYING, CONFIRMING_EXIT, EXITING};
 
     static GameState mGameState;
+    static GameState mPreviousGameState;
     static sf::RenderWindow mMainWindow;
     static GameObjectManager mGameObjectManager;
     static sf::Clock mGameClock;

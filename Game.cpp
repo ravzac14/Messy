@@ -7,6 +7,7 @@
 #include "SplashScreen.h"
 #include "MainMenu.h"
 #include "PauseMenu.h"
+#include "ConfirmExitMenu.h"
 
 #define SPRITE_DELAY .10  //This is sprite input delay, to simulate older fps
                           // .10 = 10 FPS, 0.033 = 30 FPS, .066 = 60 FPS, etc
@@ -45,8 +46,10 @@ void Game::start(void)
 
 void Game::handleKey()
 { 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+      mPreviousGameState = Game::PLAYING;
       mGameState = Game::PAUSED;
+    }
 } //handleKey
 
 sf::RenderWindow& Game::getWindow ()
@@ -114,21 +117,24 @@ void Game::gameLoop()
       
       while (mMainWindow.pollEvent(currentEvent))
       {
-        if (currentEvent.type == sf::Event::Closed) 
-          mGameState = Game::EXITING;
+        if (currentEvent.type == sf::Event::Closed) {
+          mPreviousGameState = Game::PLAYING;
+          mGameState = Game::CONFIRMING_EXIT;
+        }
       }
       Game::handleKey();
 
 //TODO:mElapsed gets thrown to screen
-
-//TODO: Pull out event handling in MainMenu
 
       if ((mGameClock.getElapsedTime().asSeconds() - mLastUpdate) >= SPRITE_DELAY){
         mGameObjectManager.updateAll();
         mLastUpdate = mGameClock.getElapsedTime().asSeconds();
       } 
     } break;
-
+    case Game::CONFIRMING_EXIT: {
+      mMainWindow.setMouseCursorVisible(true);
+      showConfirmExitMenu();
+    } break;
   }//switch
 }//gameLoop
 
@@ -137,6 +143,38 @@ void Game::gameLoop()
 //       The showXX () methods
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+void Game::showConfirmExitMenu()
+{
+  Game::delayBy(0.20f);
+  ConfirmExitMenu ceMenu;
+  ConfirmExitMenu::MenuResult result = ceMenu.show(mMainWindow);
+  switch (result) {
+    case ConfirmExitMenu::EXIT: {
+      if (mPreviousGameState == Game::PAUSED) {
+        mPreviousGameState = Game::CONFIRMING_EXIT;
+        mGameState = Game::MENU;
+      } else {
+        mPreviousGameState = Game::CONFIRMING_EXIT;
+        mGameState = Game::EXITING; 
+      }
+    } break;
+    case ConfirmExitMenu::PLAY: {
+      if (mPreviousGameState == Game::PAUSED) {
+        mPreviousGameState = Game::CONFIRMING_EXIT;
+        mGameState = Game::PAUSED;
+      } else {
+        mPreviousGameState = Game::CONFIRMING_EXIT;
+        mGameState = Game::MENU; 
+      }
+    } break;
+    case ConfirmExitMenu::HARD_EXIT: {
+      mPreviousGameState = Game::CONFIRMING_EXIT;
+      mGameState = Game::EXITING;
+    }
+  }
+  Game::delayBy(0.20f);
+}
+
 void Game::showPauseMenu()
 {
   Game::delayBy(0.20f); //Was being weird about handling keys to quick
@@ -144,13 +182,16 @@ void Game::showPauseMenu()
   PauseMenu::MenuResult result = pauseMenu.show(mMainWindow);
   switch (result) {
     case PauseMenu::EXIT: {
-      mGameState = Game::MENU;
+      mPreviousGameState = Game::PAUSED;
+      mGameState = Game::CONFIRMING_EXIT;
     } break;
     case PauseMenu::PLAY: {
+      mPreviousGameState = Game::PAUSED;
       mGameState = Game::PLAYING;
     } break; 
     case PauseMenu::HARD_EXIT: {
-      mGameState = Game::EXITING;
+      mPreviousGameState = Game::PAUSED;
+      mGameState = Game::CONFIRMING_EXIT;
     } break;
   }//switch
   Game::delayBy(0.20f); //Same ^
@@ -160,24 +201,30 @@ void Game::showSplash()
 {
   SplashScreen splash;
   splash.show(mMainWindow);
+  mPreviousGameState = Game::SPLASH;
   mGameState = Game::MENU;
 }
 
 void Game::showMenu()
 {
+  Game::delayBy(0.20f);
   MainMenu mainMenu;
   MainMenu::MenuResult result = mainMenu.show(mMainWindow);
   switch (result) {
     case MainMenu::EXIT: {
-      mGameState = Game::EXITING;
+      mPreviousGameState = Game::MENU;
+      mGameState = Game::CONFIRMING_EXIT;
     } break;
-    //TODO: case MainMenu::HIGHSCORE: {
+    //TODO: case MainMenu::HIGHSCORE: {i
+    //  mPreviouseGameState = Game::MENU;
     //  mGameState = Game::HIGHSCORING;
     //} break;
     case MainMenu::PLAY: {
+      mPreviousGameState = Game::MENU;
       mGameState = Game::PLAYING;
     } break;
   }
+  Game::delayBy(0.20f);
 }
 
 //Make sure all the static memebers are init
@@ -186,4 +233,5 @@ float Game::mElapsedTime;
 sf::Clock Game::mGameClock;
 GameObjectManager Game::mGameObjectManager;
 Game::GameState Game::mGameState = UNINIT;
+Game::GameState Game::mPreviousGameState = UNINIT;
 sf::RenderWindow Game::mMainWindow;
