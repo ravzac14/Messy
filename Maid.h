@@ -20,7 +20,7 @@ class Maid : public IVisibleGameObject
     void setFace(ActorFace f);
     bool isLegalMove(float newX, float newY);
     void move(float xOffset,float yOffset);
-    void update();
+    void update(sf::Time deltaTime);
     void initializeActor();
     void handleKey();
 

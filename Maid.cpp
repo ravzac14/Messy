@@ -42,7 +42,7 @@ void Maid::handleKey()
   } 
 } //handleKey
 
-void Maid::update ()
+void Maid::update (sf::Time deltaTime)
 {
     handleKey();
 } //update

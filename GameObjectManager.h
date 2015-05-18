@@ -14,8 +14,8 @@ class GameObjectManager
     int getObjectCount() const;
     IVisibleGameObject* get(std::string name) const;
 
-    void drawAll(sf::RenderWindow& window);
-    void updateAll ();
+    void drawAll (sf::RenderWindow& window);
+    void updateAll (sf::Time deltaTime);
 
   private:
     std::map<std::string, IVisibleGameObject*> mGameObjects;

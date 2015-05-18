@@ -26,11 +26,11 @@ void GameObjectManager::remove (std::string name)
   }
 }
 
-void GameObjectManager::updateAll () 
+void GameObjectManager::updateAll (sf::Time deltaTime) 
 {
   std::map<std::string, IVisibleGameObject*>::const_iterator itr = mGameObjects.begin();
   while (itr != mGameObjects.end()) {
-    itr->second->update();
+    itr->second->update(deltaTime);
     itr++;
   }
 }
@@ -52,7 +52,7 @@ void GameObjectManager::drawAll (sf::RenderWindow& window)
 {
   std::map<std::string, IVisibleGameObject*>::const_iterator itr = mGameObjects.begin();
   while (itr != mGameObjects.end()) {
-    itr->second->draw(window);
+    itr->second->draw(window,sf::RenderStates::Default);
     itr++;
   }
 }

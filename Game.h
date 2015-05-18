@@ -21,6 +21,7 @@ class Game
     static bool isExiting();
     static void gameLoop();
 
+    static void showLoadScreen();
     static void showPauseMenu();
     static void showSplash();
     static void showMenu();

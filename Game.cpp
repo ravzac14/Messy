@@ -8,6 +8,7 @@
 #include "MainMenu.h"
 #include "PauseMenu.h"
 #include "ConfirmExitMenu.h"
+#include "LoadScreen.h"
 
 #define SPRITE_DELAY .10  //This is sprite input delay, to simulate older fps
                           // .10 = 10 FPS, 0.033 = 30 FPS, .066 = 60 FPS, etc
@@ -19,7 +20,7 @@ void Game::start(void)
     return;
  
   mMainWindow.create(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT,32),"Messy");
-
+  mMainWindow.setFramerateLimit(60);
   mGameState = Game::SPLASH;
 
   //Load first level
@@ -105,6 +106,10 @@ void Game::gameLoop()
       mMainWindow.setMouseCursorVisible(true);
       showMenu();
     } break;
+    case Game::LOADING: {
+      mMainWindow.setMouseCursorVisible(false);
+      showLoadScreen();
+    } break;
     case Game::PAUSED: {
       mMainWindow.setMouseCursorVisible(false);
       showPauseMenu();
@@ -127,7 +132,8 @@ void Game::gameLoop()
 //TODO:mElapsed gets thrown to screen
 
       if ((mGameClock.getElapsedTime().asSeconds() - mLastUpdate) >= SPRITE_DELAY){
-        mGameObjectManager.updateAll();
+        sf::Time oldTime = sf::seconds(mLastUpdate);
+        mGameObjectManager.updateAll(mGameClock.getElapsedTime() - oldTime);
         mLastUpdate = mGameClock.getElapsedTime().asSeconds();
       } 
     } break;
@@ -163,8 +169,8 @@ void Game::showConfirmExitMenu()
         mPreviousGameState = Game::CONFIRMING_EXIT;
         mGameState = Game::PAUSED;
       } else {
+        mGameState = mPreviousGameState; 
         mPreviousGameState = Game::CONFIRMING_EXIT;
-        mGameState = Game::MENU; 
       }
     } break;
     case ConfirmExitMenu::HARD_EXIT: {
@@ -173,6 +179,14 @@ void Game::showConfirmExitMenu()
     }
   }
   Game::delayBy(0.20f);
+}
+
+void Game::showLoadScreen()
+{
+  LoadScreen load;
+  load.show(mMainWindow);
+  mPreviousGameState = Game::LOADING;
+  mGameState = Game::PLAYING;
 }
 
 void Game::showPauseMenu()
@@ -221,7 +235,7 @@ void Game::showMenu()
     //} break;
     case MainMenu::PLAY: {
       mPreviousGameState = Game::MENU;
-      mGameState = Game::PLAYING;
+      mGameState = Game::LOADING;
     } break;
   }
   Game::delayBy(0.20f);

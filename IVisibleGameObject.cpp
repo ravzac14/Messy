@@ -10,15 +10,16 @@ IVisibleGameObject::IVisibleGameObject () : mIsLoaded {false}
 IVisibleGameObject::~IVisibleGameObject ()
 { }
 
-void IVisibleGameObject::load (std::string filename)
+void IVisibleGameObject::load (const std::string filename)
 {
+  const sf::Rect<int> empty;
   if (mIsInitialized) {
-    if (mImage.loadFromFile(filename) == false) {
+    bool noErrorLoading = mTexture.loadFromFile(filename, empty); 
+    if (!noErrorLoading) {
       mFileName = "";
       mIsLoaded = false;
     } else {
       mFileName = filename;
-      mTexture.loadFromImage(mImage, sf::Rect<int> {});
       mSprite.setTexture(mTexture);
       mIsLoaded = true;
     }
@@ -28,7 +29,7 @@ void IVisibleGameObject::load (std::string filename)
   }
 }
 
-void IVisibleGameObject::update ()
+void IVisibleGameObject::update (sf::Time deltaTime)
 { }
 
 sf::Vector2f IVisibleGameObject::getPosition () const
@@ -61,10 +62,18 @@ sf::Sprite& IVisibleGameObject::getSprite ()
 void IVisibleGameObject::initializeActor()
 { };
 
-void IVisibleGameObject::draw (sf::RenderWindow& window)
+void IVisibleGameObject::setColor (const sf::Color& color)
+{
+  mVertices[0].color = color;
+  mVertices[1].color = color;
+  mVertices[2].color = color;
+  mVertices[3].color = color;
+}
+
+void IVisibleGameObject::draw (sf::RenderTarget& target, sf::RenderStates states) const
 {
   if (mIsLoaded) {
-    window.draw(mSprite);
+    target.draw(mSprite);
   } 
 } 
 
